@@ -14,4 +14,4 @@ You may also see any lint errors in the console.
 
 1. Initial state
 2. Loading state
-3. Succes & Error state
+3. Success & Error state

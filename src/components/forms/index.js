@@ -53,6 +53,7 @@ export default function StateTextFields() {
       });
   }, []);
 
+  // Form submission & api handling
   function getCurrencyRange() {
     setIsTableLoading(true);
     let tempTablecurrencies = encodeURIComponent(tableCurrency.join(','));
@@ -85,6 +86,7 @@ export default function StateTextFields() {
       });
   }
 
+  // Fetching 7 days of previous dates
   function nextdays(dt) {
     let datesArray = [];
     for (let i = 1; i <= 7; i++) {
