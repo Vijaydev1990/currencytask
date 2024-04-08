@@ -7,6 +7,9 @@ import FormControl from '@mui/material/FormControl';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import ExchangeTable from '../table/index';
+import {Padding} from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 
 export default function StateTextFields() {
   const [date, setDate] = React.useState(
@@ -16,6 +19,9 @@ export default function StateTextFields() {
   const [currencies, setCurrencies] = React.useState([]);
   const [datesArr, setDatesArr] = React.useState([]);
   const [historicData, setHistoricData] = React.useState([]);
+  const [isTableLoading, setIsTableLoading] = React.useState(false);
+  const [isTableData, setIsTableData] = React.useState(false);
+  const [isTableError, setIsTableError] = React.useState(false);
   const [tableCurrency, setTableCurrency] = React.useState([
     'GBP',
     'EUR',
@@ -41,10 +47,14 @@ export default function StateTextFields() {
           tempCurrency.push(curr[1]);
         });
         setCurrencies(tempCurrency);
+      })
+      .catch(error => {
+        console.log(error);
       });
   }, []);
 
   function getCurrencyRange() {
+    setIsTableLoading(true);
     let tempTablecurrencies = encodeURIComponent(tableCurrency.join(','));
     fetch(
       'https://api.currencyapi.com/v3/historical?apikey=fca_live_3XjcWKrSa2NJhU43oVZgGNqFNr4Fy9hSJmnOUEXd&currencies=' +
@@ -64,6 +74,14 @@ export default function StateTextFields() {
         });
         console.log('temphistoricData', temphistoricData);
         setHistoricData(temphistoricData);
+        setIsTableLoading(false);
+        setIsTableData(true);
+        setIsTableError(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setIsTableLoading(false);
+        setIsTableError(true);
       });
   }
 
@@ -79,6 +97,11 @@ export default function StateTextFields() {
     console.log('datesArray', datesArray);
     setDatesArr(datesArray);
   }
+  React.useEffect(() => {
+    if (date) {
+      nextdays(date);
+    }
+  }, []);
 
   return (
     <Box>
@@ -93,6 +116,7 @@ export default function StateTextFields() {
           alignItems: 'center',
           justifyContent: 'center',
           marginTop: '100px',
+          marginBottom: '50px',
         }}
         noValidate
         autoComplete="off">
@@ -136,11 +160,21 @@ export default function StateTextFields() {
           Submit
         </Button>
       </Box>
-      <Box>
-        <ExchangeTable
-          historicData={historicData}
-          date={date}
-          dateArray={datesArr}></ExchangeTable>
+
+      <Box style={{margin: '10px', marginTop: '60px !important'}}>
+        {isTableLoading && <CircularProgress />}
+
+        {!isTableLoading && isTableData && (
+          <ExchangeTable
+            historicData={historicData}
+            date={date}
+            dateArray={datesArr}></ExchangeTable>
+        )}
+        {isTableError && (
+          <Alert severity="error">
+            Unable to load data right now. Pleae try again after some time.
+          </Alert>
+        )}
       </Box>
     </Box>
   );
