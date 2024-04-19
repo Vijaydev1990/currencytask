@@ -11,19 +11,22 @@ export default function DataTable(props) {
   ]);
 
   let tempRows = [...historicData];
-  tempRows.forEach((tr, index) => {
-    tr.id = index + 1;
-    columns.forEach((val, colindex) => {
-      let valueindex = 'value' + colindex;
-      tr[valueindex] = tr.value;
-    });
+  // tempRows.forEach((tr, index) => {
+  //   tr.id = index + 1;
+  //   columns.forEach((val, colindex) => {
+  //     let valueindex = 'value' + colindex;
+  //     tr[valueindex] = tr.value;
+  //   });
+  // });
+  const rows = [...historicData];
+  rows.forEach((hi, ind) => {
+    hi.id = ind + 1;
   });
-  const rows = [...tempRows];
   useEffect(() => {
     let tempCols = [
       {field: 'id', headerName: 'ID', width: 70},
       {field: 'code', headerName: 'Currency Code', width: 130},
-      {field: 'value', headerName: date, width: 160},
+      {field: 'value0', headerName: date, width: 160},
     ];
     dateArray.forEach((da, index) => {
       tempCols.push({field: 'value' + index, headerName: da, width: 160});
@@ -31,17 +34,20 @@ export default function DataTable(props) {
     console.log(tempCols);
     setColumns(tempCols);
   }, [dateArray]);
+  useEffect(() => {
+    console.log('historicData', historicData);
+  }, [historicData]);
   return (
-    <div style={{height: 400}}>
+    <div style={{height: 'auto'}}>
       <DataGrid
         rows={rows}
         columns={columns}
         initialState={{
           pagination: {
-            paginationModel: {page: 0, pageSize: 5},
+            paginationModel: {page: 0, pageSize: 10},
           },
         }}
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={[100, 100]}
       />
     </div>
   );
